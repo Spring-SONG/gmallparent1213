@@ -16,6 +16,7 @@
         <module>common</module>
         <module>model</module>
         <module>service</module>
+        <module>server-gateway</module>
     </modules>
     <!--表示夫=父工程，定义jar包使用版本-->
     <packaging>pom</packaging>

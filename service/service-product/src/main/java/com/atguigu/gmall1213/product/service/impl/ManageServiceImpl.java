@@ -97,4 +97,24 @@ public class ManageServiceImpl implements ManageService {
             }
         }
     }
+
+    @Override
+    public BaseAttrInfo getAttrInfo(Long attrId) {
+        // attrId 平台属性Id  attrId=base_attr_info.id  此id 是base_attr_info 主键
+        BaseAttrInfo baseAttrInfo = baseAttrInfoMapper.selectById(attrId);
+
+        // 判断如果当前baseAttrInfo 存在，则查询平台属性值集合。
+        if (null!=baseAttrInfo){
+            // 不能直接返回baseAttrInfo，因为控制器需要的是baseAttrInfo 下的平台属性值集合。
+            // 需要给平台属性值属性赋值。
+            // select * from base_attr_value where attr_id = attrId;
+            QueryWrapper<BaseAttrValue> baseAttrValueQueryWrapper = new QueryWrapper<>();
+            baseAttrValueQueryWrapper.eq("attr_id",attrId);
+            List<BaseAttrValue> baseAttrValueList = baseAttrValueMapper.selectList(baseAttrValueQueryWrapper);
+            // 将平台属性值结合放入baseAttrInfo 中，此时才能返回！
+            baseAttrInfo.setAttrValueList(baseAttrValueList);
+        }
+
+        return baseAttrInfo;
+    }
 }

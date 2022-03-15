@@ -1,10 +1,7 @@
 package com.atguigu.gmall1213.product.controller;
 
 import com.atguigu.gmall1213.common.result.Result;
-import com.atguigu.gmall1213.model.product.BaseAttrInfo;
-import com.atguigu.gmall1213.model.product.BaseCategory1;
-import com.atguigu.gmall1213.model.product.BaseCategory2;
-import com.atguigu.gmall1213.model.product.BaseCategory3;
+import com.atguigu.gmall1213.model.product.*;
 import com.atguigu.gmall1213.product.service.ManageService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +64,27 @@ public class BaseManageController {
         // 调用保存方法
         manageService.saveAttrInfo(baseAttrInfo);
         return Result.ok();
+    }
+    // 修改平台属性：根据平台属性Id 获取平台属性数据
+    // 根据文档接口 http://api.gmall.com/admin/product/getAttrValueList/{attrId}
+    // 由于页面返回值需要{Result 结构的数据}
+    @GetMapping("getAttrValueList/{attrId}")
+    public Result<List<BaseAttrValue>> getAttrValueList(@PathVariable Long attrId){
+        // 方法一：只是从功能上而言完成的！
+        // select * from base_attr_value where attr_id = attrId;
+        // 控制层通常会调用服务层
+        // List<BaseAttrValue> baseAttrValueList =  manageService.getAttrValueList(attrId);
+
+
+        // 方法二：是从业务逻辑上完成的！
+        // 根据业务进行分析一下，这样直接查询，是否可以？
+        // attrId 平台属性Id  attrId=base_attr_info.id
+        // 平台属性，平台属性值 关系 1：n
+        // 要想查询平台属性值，应该从平台属性入手！如果有属性的话，我才会取查询属性值。
+        // 根据上述分析，那么应该先查询平台属性，从平台属性中获取平台属性值集合。
+
+        BaseAttrInfo baseAttrInfo = manageService.getAttrInfo(attrId); // attrId 平台属性Id  attrId=base_attr_info.id
+        List<BaseAttrValue> attrValueList = baseAttrInfo.getAttrValueList();
+        return  Result.ok(attrValueList);
     }
 }
