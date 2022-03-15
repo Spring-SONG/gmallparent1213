@@ -3,6 +3,8 @@ package com.atguigu.gmall1213.product.controller;
 import com.atguigu.gmall1213.common.result.Result;
 import com.atguigu.gmall1213.model.product.*;
 import com.atguigu.gmall1213.product.service.ManageService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -87,4 +89,20 @@ public class BaseManageController {
         List<BaseAttrValue> attrValueList = baseAttrInfo.getAttrValueList();
         return  Result.ok(attrValueList);
     }
+    // 根据条件查询spuInfo 数据列表 | 传递过来的数据，如果正好是实体类的属性，那么就可以给实体类。对象传值！
+    // http://api.gmall.com/admin/product/{page}/{limit}?category3Id=61
+    @GetMapping("{page}/{limit}")
+    public Result getPageList(@PathVariable Long page,
+                              @PathVariable Long limit,
+                              SpuInfo spuInfo){
+        // 创建一个Page 对象
+        Page<SpuInfo> spuInfoPage = new Page<>(page,limit);
+
+        // 调用服务层
+        IPage<SpuInfo> spuInfoIPageList = manageService.selectPage(spuInfoPage, spuInfo);
+
+        // 返回给Result
+        return Result.ok(spuInfoIPageList);
+    }
+
 }

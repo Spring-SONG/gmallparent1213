@@ -1,9 +1,8 @@
 package com.atguigu.gmall1213.product.service;
 
-import com.atguigu.gmall1213.model.product.BaseAttrInfo;
-import com.atguigu.gmall1213.model.product.BaseCategory1;
-import com.atguigu.gmall1213.model.product.BaseCategory2;
-import com.atguigu.gmall1213.model.product.BaseCategory3;
+import com.atguigu.gmall1213.model.product.*;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -29,4 +28,12 @@ public interface ManageService {
     void saveAttrInfo(BaseAttrInfo baseAttrInfo);
 
     BaseAttrInfo getAttrInfo(Long attrId);
+    /**
+     * 分页查询 多个spuInfo 必须指定，查询第几页，每页显示的数据条数，是否有抽出条件 {category3Id=?}。
+     * http://api.gmall.com/admin/product/{page}/{limit}?category3Id=61
+     * @param spuInfoPageParam
+     * @param spuInfo 因为spuInfo 实体类的属性中有一个属性叫category3Id | spring mvc 封装对象传值
+     * @return
+     */
+    IPage<SpuInfo> selectPage(Page<SpuInfo> spuInfoPageParam , SpuInfo spuInfo);
 }
