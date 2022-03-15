@@ -8,4 +8,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface BaseTrademarkService extends IService<BaseTrademark> {
     // 分页查询品牌数据
     IPage<BaseTrademark> selectPage(Page<BaseTrademark> baseTrademarkPage);
+
 }

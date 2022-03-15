@@ -36,4 +36,10 @@ public interface ManageService {
      * @return
      */
     IPage<SpuInfo> selectPage(Page<SpuInfo> spuInfoPageParam , SpuInfo spuInfo);
+
+    /**
+     * 获取所有的销售属性数据
+     * @return
+     */
+    List<BaseSaleAttr> getBaseSaleAttrList();
 }

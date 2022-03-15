@@ -42,6 +42,9 @@ public class ManageServiceImpl implements ManageService {
     @Autowired
     private SkuInfoMapper skuInfoMapper;
 
+    @Autowired
+    private BaseSaleAttrMapper baseSaleAttrMapper;
+
     @Override
     public List<BaseCategory1> getCategory1() {
         List<BaseCategory1> baseCategory1s=baseCategory1Mapper.selectList(null);
@@ -134,5 +137,11 @@ public class ManageServiceImpl implements ManageService {
         // 查询完成之后，可以按照某一种规则进行排序。
         spuInfoQueryWrapper.orderByDesc("id");
         return spuInfoMapper.selectPage(spuInfoPageParam,spuInfoQueryWrapper);
+    }
+
+    @Override
+    public List<BaseSaleAttr> getBaseSaleAttrList() {
+        // 调用mapper 层。
+        return baseSaleAttrMapper.selectList(null);
     }
 }
