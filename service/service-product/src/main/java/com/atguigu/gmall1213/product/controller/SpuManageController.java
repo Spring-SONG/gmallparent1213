@@ -30,15 +30,15 @@ public class SpuManageController {
 
     }
 
-//    // http://api.gmall.com/admin/product/saveSpuInfo POST
-//    @PostMapping("saveSpuInfo")
-//    public Result saveSpuInfo(@RequestBody SpuInfo spuInfo){
-//        if (null!=spuInfo){
-//            // 调用服务层
-//            manageService.saveSpuInfo(spuInfo);
-//        }
-//        return Result.ok(); // 200 成功
-//    }
+    // http://api.gmall.com/admin/product/saveSpuInfo POST
+    @PostMapping("saveSpuInfo")
+    public Result saveSpuInfo(@RequestBody SpuInfo spuInfo){
+        if (null!=spuInfo){
+            // 调用服务层
+            manageService.saveSpuInfo(spuInfo);
+        }
+        return Result.ok(); // 200 成功
+    }
 
 
 

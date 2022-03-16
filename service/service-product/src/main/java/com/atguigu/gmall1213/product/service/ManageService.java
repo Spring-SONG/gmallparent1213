@@ -42,4 +42,16 @@ public interface ManageService {
      * @return
      */
     List<BaseSaleAttr> getBaseSaleAttrList();
+
+    void saveSpuInfo(SpuInfo spuInfo);
+
+    List<SpuImage> getSpuImageList(Long spuId);
+
+    List<SpuSaleAttr> getSpuSaleAttrList(Long spuId);
+
+    void saveSkuInfo(SkuInfo skuInfo);
+
+    IPage<SkuInfo> selectPage(Page<SkuInfo> skuInfoPage);
+
+    void onSale(Long skuId);
 }
