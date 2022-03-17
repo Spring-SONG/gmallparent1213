@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description:
@@ -62,6 +65,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     private SkuAttrValueMapper skuAttrValueMapper;
+
+    @Autowired
+    private BaseCategoryViewMapper baseCategoryViewMapper;
 
     @Override
     public List<BaseCategory1> getCategory1() {
@@ -266,4 +272,60 @@ public class ManageServiceImpl implements ManageService {
         skuInfo.setId(skuId);
         skuInfoMapper.updateById(skuInfo);
     }
+
+    @Override
+    public SkuInfo getSkuInfo(Long skuId) {
+        SkuInfo skuInfo=skuInfoMapper.selectById(skuId);
+       List<SkuImage> skuImageList = skuImageMapper.selectList(new QueryWrapper<SkuImage>().eq("sku_id", skuId));
+        skuInfo.setSkuImageList(skuImageList);
+        return skuInfo;
+    }
+
+    @Override
+    public BaseCategoryView getBaseCategoryViewBycategory3Id(Long category3Id) {
+        return baseCategoryViewMapper.selectById(category3Id);
+    }
+
+    @Override
+    public BigDecimal getSkuPriceBySkuId(Long sukId) {
+
+        SkuInfo skuInfo=skuInfoMapper.selectById(sukId);
+        if (null != skuInfo) {
+            BigDecimal price=skuInfo.getPrice();
+            return price;
+        }
+        return new BigDecimal(0);
+    }
+
+    // 销售属性-销售属性值：
+    @Override
+    public List<SpuSaleAttr> getSpuSaleAttrListCheckBySku(Long skuId, Long spuId) {
+        return spuSaleAttrMapper.selectSpuSaleAttrListCheckBySku(skuId,spuId);
+    }
+
+    @Override
+    public Map getSkuValueIdsMap(Long spuId) {
+        // 调用mapper 自定义方法获取数据，将数据查询之后直接放入List。
+        HashMap<Object, Object> map = new HashMap<>();
+        /*
+            select sv.sku_id, group_concat(sv.sale_attr_value_id order by sp.base_sale_attr_id asc separator '|')
+                value_ids from sku_sale_attr_value sv
+                inner  join spu_sale_attr_value  sp on sp.id = sv.sale_attr_value_id
+                where sv.spu_id = 12
+                group by sku_id;
+
+            执行出来的结果应该是List<Map>
+            map.put("55|57","30") skuSaleAttrValueMapper
+         */
+        List<Map> mapList = skuSaleAttrValueMapper.getSaleAttrValuesBySpu(spuId);
+        // 获取到数据以后。开始循环遍历集合中的每条数据
+        if (null!=mapList && mapList.size()>0){
+            for (Map skuMaps : mapList) {
+                // map.put("55|57","30")
+                map.put(skuMaps.get("value_ids"),skuMaps.get("sku_id"));
+            }
+        }
+        return map;
+    }
+
 }

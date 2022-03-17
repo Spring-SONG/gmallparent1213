@@ -4,7 +4,9 @@ import com.atguigu.gmall1213.model.product.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description:
@@ -28,17 +30,20 @@ public interface ManageService {
     void saveAttrInfo(BaseAttrInfo baseAttrInfo);
 
     BaseAttrInfo getAttrInfo(Long attrId);
+
     /**
      * 分页查询 多个spuInfo 必须指定，查询第几页，每页显示的数据条数，是否有抽出条件 {category3Id=?}。
      * http://api.gmall.com/admin/product/{page}/{limit}?category3Id=61
+     *
      * @param spuInfoPageParam
-     * @param spuInfo 因为spuInfo 实体类的属性中有一个属性叫category3Id | spring mvc 封装对象传值
+     * @param spuInfo          因为spuInfo 实体类的属性中有一个属性叫category3Id | spring mvc 封装对象传值
      * @return
      */
-    IPage<SpuInfo> selectPage(Page<SpuInfo> spuInfoPageParam , SpuInfo spuInfo);
+    IPage<SpuInfo> selectPage(Page<SpuInfo> spuInfoPageParam, SpuInfo spuInfo);
 
     /**
      * 获取所有的销售属性数据
+     *
      * @return
      */
     List<BaseSaleAttr> getBaseSaleAttrList();
@@ -54,4 +59,26 @@ public interface ManageService {
     IPage<SkuInfo> selectPage(Page<SkuInfo> skuInfoPage);
 
     void onSale(Long skuId);
+
+    SkuInfo getSkuInfo(Long skuId);
+
+    BaseCategoryView getBaseCategoryViewBycategory3Id(Long category3Id);
+
+    BigDecimal getSkuPriceBySkuId(Long sukId);
+
+    /**
+     * 根据skuId spuId 查询销售属性集合数据
+     * @param skuId
+     * @param spuId
+     * @return
+     */
+    List<SpuSaleAttr> getSpuSaleAttrListCheckBySku(Long skuId, Long spuId);
+
+    /**
+     * 根据spuId 查询数据
+     * map.put("value_ids","skuId")
+     * @param spuId
+     * @return
+     */
+    Map getSkuValueIdsMap(Long spuId);
 }

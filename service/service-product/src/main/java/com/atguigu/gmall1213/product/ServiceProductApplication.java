@@ -6,6 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
+ * 商品模块，用于商品的管理
  * @author mqx
  * @date 2020/6/9 14:53
  */
