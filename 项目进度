@@ -1,10 +1,41 @@
 9.29
 第三天商品分类
 电商项目只看代码就行，其中的错误什么的都不进行排查
-虚拟机和前端都不用了，以最快的速度把电商项目过完
+虚拟机和前端都不用了，以最快的速度把电商项目过完,仅用来过代码，最后参考还需查看完整版项目
 3.14
 day04 第二个视频
 3.15
 day05 第一个视频
 3.16
 day06 第一个视频
+3.17
+day07 第一个视频
+3.18
+远程调用得步骤
+1、创建远程调用接口，将要调用的数据接口放到feign接口中，service-product模块中api接口就是提供原曾调用接口的数据源
+在service-client模块中的service-product-client模块中的接口中远程获取api中的所有接口，要getMapping写全路径
+提供远程调用的接口ProductFeignClient要标明从哪个微服务中调用的接口，然后哪个模块需要调用就
+autowair注入进接口既能调用,jar包在SpringCloud中，调用数据的模块需要添加提供数据模块的依赖
+提供远程调用模块要引入feign：
+ <!-- 服务调用feign -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+    <scope>provided </scope>
+</dependency>
+String：存储一个单独的常量，变量 {记录当前商品被访问的次数}
+Set: 获取两个结果集的交集
+List: 在队列的使用场景下 lpush ，pop ,秒杀。
+Hash: 主要用于存储对象
+ZSet: 排序
+flash db 清空缓存
+
+redis使用步骤
+1、引入jar包，在service-util中
+2、制作配置类 service-util RedisConfig
+redis总结：
+    1.	导入依赖
+    2.	配置工具类型
+    3.	有了缓存以后，明确数据查询流程！
+    4.	什么情况下，判断好使用哪个数据类型！
+day08 第九个视频

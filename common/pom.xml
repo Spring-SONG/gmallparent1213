@@ -17,6 +17,7 @@
         <module>common-util</module>
         <module>service-util</module>
         <module>rabbit-util</module>
+        <module>web-util</module>
     </modules>
     <!--引入子模块需要的依赖jar-->
     <dependencies>
