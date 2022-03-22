@@ -1,0 +1,6 @@
+gateway\config\RedisConfig$1.class
+gateway\config\RedisConfig.class
+gateway\config\KeyResolverConfig.class
+gateway\ServerGatewayApplication.class
+gateway\config\CorsConfig.class
+gateway\filter\AuthGlobalFilter.class

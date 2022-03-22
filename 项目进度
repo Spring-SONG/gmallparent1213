@@ -40,7 +40,7 @@ redis总结：
     4.	什么情况下，判断好使用哪个数据类型！
 3.22
 分布式锁：redis锁
-day08
+day08是Redis缓存和aop思想结合的一天，如果日后复习可重看此日内容
 redis：setNX就是锁，在key的有效期内都是在锁定的状态
 使用lua脚本来配合redis实现删除key的原子性,集群情况下依旧有问题
 最终方案是使用redisson, redissonClient的lock来解决
@@ -49,3 +49,4 @@ ctrl art m 提出方法
 如果使用hash类型需要一个info取多次数据，性能变慢，好处是可以方便修改对象数据，但商品详情只用来展示
 不会修改，所以选择string类型来存放
 使用aop方式将数据放入缓存中 、动态代理
+git config --global --unset https.proxy

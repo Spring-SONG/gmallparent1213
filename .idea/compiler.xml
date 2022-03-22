@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="web-all" />
+        <module name="service-product-client" />
+        <module name="common-util" />
+        <module name="service-item-client" />
+        <module name="model" />
+        <module name="server-gateway" />
+        <module name="web-util" />
+        <module name="service-util" />
+        <module name="service-product" />
+        <module name="service-item" />
+        <module name="rabbit-util" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="common" target="1.8" />
+      <module name="common-util" target="1.8" />
+      <module name="gmall-parent" target="1.8" />
+      <module name="model" target="1.8" />
+      <module name="rabbit-util" target="1.8" />
+      <module name="server-gateway" target="1.8" />
+      <module name="service" target="1.8" />
+      <module name="service-client" target="1.8" />
+      <module name="service-item" target="1.8" />
+      <module name="service-item-client" target="1.8" />
+      <module name="service-product" target="1.8" />
+      <module name="service-product-client" target="1.8" />
+      <module name="service-util" target="1.8" />
+      <module name="web" target="1.8" />
+      <module name="web-all" target="1.8" />
+      <module name="web-util" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="common-util" options="-parameters" />
+      <module name="model" options="-parameters" />
+      <module name="rabbit-util" options="-parameters" />
+      <module name="server-gateway" options="-parameters" />
+      <module name="service-item" options="-parameters" />
+      <module name="service-item-client" options="-parameters" />
+      <module name="service-product" options="-parameters" />
+      <module name="service-product-client" options="-parameters" />
+      <module name="service-util" options="-parameters" />
+      <module name="web-all" options="-parameters" />
+      <module name="web-util" options="-parameters" />
+    </option>
+  </component>
+</project>
