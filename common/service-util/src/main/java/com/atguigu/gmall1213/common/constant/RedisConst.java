@@ -35,4 +35,5 @@ public class RedisConst {
     public static final int SECKILL__TIMEOUT = 60 * 60 * 1;
 
 
+    public static final long SKUKEY_TEMPORARY_TIMEOUT= 60*10;
 }
