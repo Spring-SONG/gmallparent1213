@@ -413,6 +413,7 @@ public class ManageServiceImpl implements ManageService {
     }
 
     @Override
+    @GmallCache(prefix = "baseCategoryView")
     public BaseCategoryView getBaseCategoryViewBycategory3Id(Long category3Id) {
         return baseCategoryViewMapper.selectById(category3Id);
     }
@@ -437,6 +438,7 @@ public class ManageServiceImpl implements ManageService {
     }
 
     @Override
+    @GmallCache(prefix = "skuValueIdsMap")
     public Map getSkuValueIdsMap(Long spuId) {
         // 调用mapper 自定义方法获取数据，将数据查询之后直接放入List。
         HashMap<Object, Object> map=new HashMap<>();

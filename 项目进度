@@ -50,4 +50,13 @@ ctrl art m 提出方法
 不会修改，所以选择string类型来存放
 使用aop方式将数据放入缓存中 、动态代理
 git config --global --unset https.proxy
+缓存用redistemplate操作，分布式锁用redisson做
+分布式锁是用来解决缓存击穿问题
+3.23
+day09
+取消rebase
+git rebase --abort
+
+
+
 
