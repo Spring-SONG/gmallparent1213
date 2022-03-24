@@ -56,7 +56,20 @@ git config --global --unset https.proxy
 day09
 取消rebase
 git rebase --abort
-
-
+for(Iterator<String> iterator = map.keySet().iterator;iterator.hasNext()){
+keySet,获取map中所有的key
+}
+@MapKey("id")
+sql中查出来的id就是Map的key
+异步编排是并行来实现商品详情的数据渲染
+以后如果想回顾这些知识点，应该去看老师的笔记，再去查相关文档，视频是最后的选择
+ItemServiceImpl
+ThreadPoolConfig
+managerService
+ProductApiController
+productFeignClient
+IndexController
+3.24
+day09 结束
 
 
