@@ -1,5 +1,6 @@
 package com.atguigu.gmall1213.product.client.impl;
 
+import com.atguigu.gmall1213.common.result.Result;
 import com.atguigu.gmall1213.model.product.BaseCategoryView;
 import com.atguigu.gmall1213.model.product.SkuInfo;
 import com.atguigu.gmall1213.model.product.SpuSaleAttr;
@@ -39,6 +40,13 @@ public class ProductDegradeFeignClient implements ProductFeignClient {
 
     @Override
     public Map getSkuValueIdsMap(Long spuId) {
+        return null;
+    }
+
+    @Override
+    public Result getBaseCategoryList() {
+
+
         return null;
     }
 }

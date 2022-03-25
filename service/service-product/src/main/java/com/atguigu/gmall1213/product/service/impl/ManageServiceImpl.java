@@ -1,5 +1,6 @@
 package com.atguigu.gmall1213.product.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.atguigu.gmall1213.common.cache.GmallCache;
 import com.atguigu.gmall1213.common.constant.RedisConst;
 import com.atguigu.gmall1213.model.product.*;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.security.Key;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @Description:
@@ -461,6 +463,74 @@ public class ManageServiceImpl implements ManageService {
             }
         }
         return map;
+    }
+
+    /**
+     * 将首页数据封装成前端页面需要的数据格式后放入缓存，实时展示切换
+     * @return
+     */
+    @Override
+    @GmallCache(prefix="index")
+    public List<JSONObject> getBaseCategoryList() {
+
+        ArrayList<JSONObject> list=new ArrayList<>();
+        //查询所有数据
+        List<BaseCategoryView> baseCategoryViewList=baseCategoryViewMapper.selectList(null);
+        //按照一级分类数据进行分组
+        Map<Long, List<BaseCategoryView>> category1Map = baseCategoryViewList.stream().collect(Collectors.groupingBy(BaseCategoryView::getCategory1Id));
+
+        //初始化index构建字符串
+        int index=1;
+
+        for (Map.Entry<Long, List<BaseCategoryView>> entry : category1Map.entrySet()) {
+            //获取一级分类id
+            Long categor1Id=entry.getKey();
+            //一级分类数据
+            List<BaseCategoryView> category2List=entry.getValue();
+            // 声明一个对象保存一级分类数据 一级分类的Json字符串
+            JSONObject category1=new JSONObject();
+            category1.put("index", index);
+            category1.put("categoryId", categor1Id);
+            //获取分组后的商品名称
+            String categoryName=category2List.get(0).getCategory1Name();
+            category1.put("categoryName", categoryName);
+            //变量迭代
+            index++;
+
+            //获取二级分类数据
+            Map<Long, List<BaseCategoryView>> category2Map=category2List.stream().collect(Collectors.groupingBy(BaseCategoryView::getCategory2Id));
+            //创建一个对象保存二级分类数据集合
+
+            ArrayList<JSONObject> category2Child=new ArrayList<>();
+            //获取二级分类中的数据
+            for (Map.Entry<Long, List<BaseCategoryView>> entry2 : category2Map.entrySet()) {
+                //获取二级分类id
+                Long categor2Id=entry2.getKey();
+
+                //获取二级分类id下的数据->三级数据
+                List<BaseCategoryView> category3List=entry2.getValue();
+                JSONObject category2=new JSONObject();
+                category2.put("categoryId", categor2Id);
+                category2.put("categoryName", category3List.get(0).getCategory2Name());
+                category2Child.add(category2);
+                //处理三级分类数据
+                ArrayList<JSONObject> category3Child=new ArrayList<>();
+                category3List.stream().forEach(category3View->{
+                    JSONObject category3=new JSONObject();
+                    category3.put("categoryId",category3View.getCategory3Id());
+                    category3.put("categoryName", category3View.getCategory3Name());
+                    //将数据放入三级对象中
+                    category3Child.add(category3);
+                });
+                //将数据放入二级对象中
+                category2.put("categoryChild", category3Child);
+            }
+            //将二级数据放入一级对象中
+            category1.put("categoryChild", category2Child);
+            // 按照json数据接口方式 分别去封装 一级分类，二级分类，三级分类数据。
+            list.add(category1);
+        }
+        return list;
     }
 
 }
