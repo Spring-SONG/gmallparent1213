@@ -83,6 +83,8 @@ public class ManageServiceImpl implements ManageService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private BaseTrademarkMapper baseTrademarkMapper;
     @Override
     public List<BaseCategory1> getCategory1() {
         List<BaseCategory1> baseCategory1s=baseCategory1Mapper.selectList(null);
@@ -531,6 +533,16 @@ public class ManageServiceImpl implements ManageService {
             list.add(category1);
         }
         return list;
+    }
+    @Override
+    public BaseTrademark getBaseTrademarkByTmId(Long tmId) {
+        return baseTrademarkMapper.selectById(tmId);
+    }
+    @Override
+    public List<BaseAttrInfo> getAttrInfoList(Long skuId) {
+        // sku_attr_value这个中间表没有属性名称，属性值名称等。所以要进行多表关联查询。
+        return baseAttrInfoMapper.selectAttrInfoList(skuId);
+
     }
 
 }
