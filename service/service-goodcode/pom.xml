@@ -9,19 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>service-item</artifactId>
-    <!--添加依赖-->
+    <artifactId>service-goodcode</artifactId>
     <dependencies>
-    <dependency>
-        <groupId>com.atguigu.gmall1213</groupId>
-        <artifactId>service-product-client</artifactId>
-        <version>1.0</version>
-    </dependency>
 
-    <dependency>
-        <groupId>com.atguigu.gmall1213</groupId>
-        <artifactId>service-list-client</artifactId>
-        <version>1.0</version>
-    </dependency>
     </dependencies>
+
+
 </project>
