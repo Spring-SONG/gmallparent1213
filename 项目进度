@@ -99,3 +99,7 @@ day10第12个视频 编写热度排名接口
 day10最后一个视频中有feign远程调用的例子
 4.01
 day10结束
+4.02
+day11
+es的agg聚合相当于mysql的group by
+day11视频结束了，代码没写，只有一个接口，全文搜索getList()
