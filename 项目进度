@@ -105,3 +105,12 @@ es的agg聚合相当于mysql的group by
 day11视频结束了，代码没写，只有一个接口，全文搜索getList()
 4.06
 day12 第六个视频，该单点登录了
+4.07
+单点登录
+单体架构是存放再session中，在服务器tomcat中，用setAttribut,getAttribut
+微服务有多个tomcat，所以不能存session中，存在缓存中，可以贯穿整个项目
+token就是登录门票，在cookie中,是前台将token放入cookie中的，同时设置了过期时间等等
+在缓存中放入token的同时也要将本机的IP地址一同放进去，可以防止异地登录
+cookie的作用域是整个浏览器，所以用户id存在cookie中要比放在缓存中更加高效
+用户登录状态是7天，且登陆后中间再浏览网页不会进行有效期延期，只能是七天
+手机的浏览器没有cookie，只有header，所以请求头中也有用户信息
