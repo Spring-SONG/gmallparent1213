@@ -27,57 +27,44 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * @author mqx
- * @date 2020/6/23 9:24
+ * @Description:
+ * @Author: songshiqi
+ * @Date: 2022/4/8 14:24
  */
 @Component
 public class AuthGlobalFilter implements GlobalFilter {
-
     @Autowired
     private RedisTemplate redisTemplate;
 
-    // 路径匹配的工具类
-    private AntPathMatcher antPathMatcher = new AntPathMatcher();
+    //路径匹配的工具类
+    private AntPathMatcher antPathMatcher=new AntPathMatcher();
 
-    @Value("${authUrls.url}")
-    private String authUrlsUrl; // authUrlsUrl=trade.html,myOrder.html,list.html
+    @Value("authUrls.url")
+    private String authUrlsUrl;//从配置文件中获取白名单页面
 
-    // 过滤器
+    //实现全局过滤器
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // 获取用户在浏览器中输入的访问路径URL
-        // 获取到请求对象
-        ServerHttpRequest request = exchange.getRequest();
-        // 通过请求对象来获取URL api/product/inner/getSkuInfo/30
-        String path = request.getURI().getPath();
-        // 判断用户发起的请求中是否有inner，说明是内部接口，内部接口不允许在浏览器直接访问！
-        // 做一个路径匹配工作
-        if (antPathMatcher.match("/**/inner/**",path)){
-            // 给提示信息，没用权限访问
-            // 获取响应对象
-            ServerHttpResponse response = exchange.getResponse();
-            // out 方法提示信息
+
+        ServerHttpRequest request=exchange.getRequest();
+        String path=request.getURI().getPath();
+        //匹配路径中是否包含白名单页面，
+        if (antPathMatcher.match("/**/inner/**", path)) {
+            //获取相应对象，提示没有访问权限
+            ServerHttpResponse response=exchange.getResponse();
             return out(response, ResultCodeEnum.PERMISSION);
         }
-        // 想获取用户登录信息，用户登录成功之后，我们存储了一个userId 在缓存。
-        // 如果在缓存中获取到了userId 那么就说明用户已经登录了，反之。
-        // 缓存中是如何存储userId 的么？key=user:login:token
-        // token 在登录的过程中，将token 放入了两个地方，一个是cookie ，要给是header。
-        // 在缓存中放入了一个 IP 地址，
-        String userId = getUserId(request);
-        // 获取临时用户Id
-        String userTempId = getUserTempId(request);
-        // 判断防止 token 被盗用
-        if ("-1".equals(userId)){
-            // 获取响应对象
-            ServerHttpResponse response = exchange.getResponse();
-            // out 方法提示信息
+        String userId=getUserId(request);
+        //获取临时用户id
+        String userTempId=getUserTempId(request);
+        if ("-1".equals(userId)) {
+            ServerHttpResponse response=exchange.getResponse();
+
             return out(response, ResultCodeEnum.PERMISSION);
         }
 
-        // 用户登录认证 http://localhost/api/product/auth/hello
-        if (antPathMatcher.match("/api/**/auth/**",path)){
-            // 如果用户的访问url 中包含此路径，则用户必须登录
+        //用户登录认证
+        if (antPathMatcher.match("/api/**/auth/**",path)) {
             if (StringUtils.isEmpty(userId)){
                 // 获取响应对象
                 ServerHttpResponse response = exchange.getResponse();
@@ -85,15 +72,10 @@ public class AuthGlobalFilter implements GlobalFilter {
                 return out(response, ResultCodeEnum.LOGIN_AUTH);
             }
         }
+        //验证用户通过web-all 访问时有没有带着白名单
+        for (String url : authUrlsUrl.split(",")) {
 
-        // 验证用户访问web-all时是否带有黑名单中的控制器！
-        // url: trade.html,myOrder.html,list.html
-        for (String authUrl : authUrlsUrl.split(",")) {
-            // 用户访问的路径中是否包含了上述的内容
-            // http://list.gmall.com/list.html?category3Id=61 用户必须登录
-            // http://item.gmall.com/30.html // 用户可以不登录
-            // 用户访问的路径中有上述内容，并且用户没用登录
-            if (path.indexOf(authUrl)!=-1 && StringUtils.isEmpty(userId)){
+            if (path.indexOf(url)!=-1&& StringUtils.isEmpty(userId)) {
                 // 获取响应对象
                 ServerHttpResponse response = exchange.getResponse();
                 // 返回一个响应的状态码，重定向获取请求资源
@@ -104,10 +86,6 @@ public class AuthGlobalFilter implements GlobalFilter {
                 return response.setComplete();
             }
         }
-
-        // 用户在访问任何一个微服务的过程中，必须先走网关。既然在网关中获取到了用户Id，那么我就可以将用户Id传递给每个微服务。
-        // item.gmall.com  list.gmall.com order.gmall.com
-        // 传递用户Id，临时用户Id 到各个微服务！
         if (!StringUtils.isEmpty(userId) || !StringUtils.isEmpty(userTempId)){
             if (!StringUtils.isEmpty(userId)){
                 // 将用户Id 存储在请求头中
@@ -124,54 +102,50 @@ public class AuthGlobalFilter implements GlobalFilter {
     }
 
     /**
-     * 获取用户Id
+     * 获取用户id
+     *
      * @param request
      * @return
      */
     private String getUserId(ServerHttpRequest request) {
-        // 用户Id 在缓存中存储 缓存中是如何存储userId 的么？key=user:login:token
-        // 关键是token  一个是cookie ，要给是header。
-        String token = "";
-        // 从header 中获取
-        List<String> list = request.getHeaders().get("token");
-        if (null!=list){
-            // 集合中的数据是如何存储，集合中只有一个数据因为key 是同一个
-            token = list.get(0);
-        }else {
-            // 从cookie 中获取
-            MultiValueMap<String, HttpCookie> cookies = request.getCookies();
-//            List<HttpCookie> token1 = cookies.get("token");
-//            HttpCookie httpCookie = token1.get(0);
-            HttpCookie cookie = cookies.getFirst("token");
-            if (null!=cookie){
-                // 因为token 要经过url进行传送
-                token = URLDecoder.decode(cookie.getValue());
+
+        String token="";
+        //从header中获取
+        List<String> list=request.getHeaders().get("token");
+        if (null != list) {
+            token=list.get(0);
+        } else {
+            //从coolie中获取
+            MultiValueMap<String, HttpCookie> cookies=request.getCookies();
+            HttpCookie cookie=cookies.getFirst("token");
+            if (null != cookie) {
+                //token需要经过url进行传送
+                token=URLDecoder.decode(cookie.getValue());
             }
         }
-        if (!StringUtils.isEmpty(token)){
-            // 组成key=user:login:token
-            String userKey = "user:login:"+token;
-            // 从缓存中获取数据
-            String userJson = (String) redisTemplate.opsForValue().get(userKey);
-            // 使用 JSONObject 进行数据转化  这个数据中有 userId，ip
-            JSONObject jsonObject = JSONObject.parseObject(userJson);
-            // 获取ip地址，是在登录时获取的ip地址，这个地址是在缓存的！
-            String ip = jsonObject.getString("ip");
-            // 获取到当前正在登录电脑的IP地址。
-            String curIp = IpUtil.getGatwayIpAddress(request);
-            // 校验token 是否能被盗用
-            if (ip.equals(curIp)){
-                return jsonObject.getString("userId");
-            }else {
-                // ip 地址不一样，说明不是在同一台电脑。
+        //从缓存中获取数据
+        if (!StringUtils.isEmpty(token)) {
+            //定义缓存的key
+            String userKey="user:login:" + token;
+            //从缓存中获取数据
+            String userJson =(String) redisTemplate.opsForValue().get(userKey);
+            JSONObject jsonObject=JSONObject.parseObject(userJson);
+            String ip=jsonObject.getString("ip");
+            //获取当前电脑的IP
+            String ipAddress=IpUtil.getGatwayIpAddress(request);
+
+            if (ip.equals(ipAddress)) {
+                //说明是同一台电脑，返回用户id
+                return jsonObject.getString("useId");
+            } else {
                 return "-1";
             }
         }
         return null;
     }
-
     // 获取临时用户Id,添加购物车时，临时用户Id 已经存在cookie 中！ 同时也可能存在header 中
-    private String getUserTempId(ServerHttpRequest request){
+
+    private String getUserTempId(ServerHttpRequest request) {
         String userTempId = "";
         // 从header 中获取
         List<String> list = request.getHeaders().get("userTempId");
@@ -189,22 +163,13 @@ public class AuthGlobalFilter implements GlobalFilter {
         }
         return userTempId;
     }
+    private Mono<Void> out(ServerHttpResponse response, ResultCodeEnum permission) {
 
-    /**
-     * 提示信息方法
-     * @param response
-     * @param resultCodeEnum
-     * @return
-     */
-    private Mono<Void> out(ServerHttpResponse response, ResultCodeEnum resultCodeEnum) {
-        // 返回用户的权限通知提示
-        Result<Object> result = Result.build(null, resultCodeEnum);
-        //result对象变成一个字节数组
-        byte[] bytes = JSONObject.toJSONString(result).getBytes(StandardCharsets.UTF_8); // 设置字符集
-        DataBuffer wrap = response.bufferFactory().wrap(bytes);
-        // 目的是给用户提示，显示到页面
-        response.getHeaders().add("Content-Type","application/json;charset=UTF-8");
-        // Publisher --->CorePublisher ---> Mono
+        //返回用户没有权限的信息
+        Result<Object> result=Result.build(null, permission);
+        byte[] bytes=JSONObject.toJSONString(result).getBytes(StandardCharsets.UTF_8);
+        DataBuffer wrap=response.bufferFactory().wrap(bytes);
+        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(wrap));
     }
 }
