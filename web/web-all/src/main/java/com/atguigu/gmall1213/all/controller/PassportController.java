@@ -1,6 +1,5 @@
 package com.atguigu.gmall1213.all.controller;
 
-import com.atguigu.gmall1213.common.result.Result;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

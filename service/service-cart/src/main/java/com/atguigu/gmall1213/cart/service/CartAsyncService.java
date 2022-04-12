@@ -17,4 +17,25 @@ public interface CartAsyncService {
      * @param cartInfo
      */
     void saveCartInfo(CartInfo cartInfo);
+
+    /**
+     * 删除
+     * @param userId
+     */
+    void deleteCartInfo(String userId);
+
+    /**
+     * 选中状态变更
+     * @param userId
+     * @param isChecked
+     * @param skuId
+     */
+    void checkCart(String userId, Integer isChecked, Long skuId);
+
+    /**
+     * 删除
+     * @param userId
+     * @param skuId
+     */
+    void deleteCartInfo(String userId, Long skuId);
 }

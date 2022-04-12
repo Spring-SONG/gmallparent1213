@@ -42,4 +42,40 @@ public class CartApiController {
         List<CartInfo> cartList=cartService.getCartList(userId, userTempId);
         return Result.ok(cartList);
     }
+
+    @GetMapping("checkCart/{skuId}/{isChecked}")
+    public Result checkCart(@PathVariable Long skuId,
+                            @PathVariable Integer isChecked,
+                            HttpServletRequest request) {
+        String userId=AuthContextHolder.getUserId(request);
+        if (StringUtils.isEmpty(userId)) {
+            //未登录获取临时用户id
+            userId=AuthContextHolder.getUserTempId(request);
+        }
+        cartService.checkCart(userId, isChecked, skuId);
+        return Result.ok();
+    }
+
+    // 删除购物车方法
+    @DeleteMapping("deleteCart/{skuId}")
+    public Result deleteCart(@PathVariable Long skuId,
+                             HttpServletRequest request) {
+        String userId=AuthContextHolder.getUserId(request);
+        if (StringUtils.isEmpty(userId)) {
+            userId=AuthContextHolder.getUserTempId(request);
+        }
+        cartService.deleteCart(skuId, userId);
+        return Result.ok();
+    }
+    // 根据用户Id 查询送货清单数据
+    @GetMapping("getCartCheckedList/{userId}")
+    public List<CartInfo> getCartCheckedList(@PathVariable String userId){
+        return cartService.getCartCheckedList(userId);
+    }
+
+    @GetMapping("loadCartCache/{userId}")
+    public Result loadCartCache(@PathVariable String userId){
+        cartService.loadCartCache(userId);
+        return Result.ok();
+    }
 }

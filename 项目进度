@@ -121,3 +121,16 @@ api/order控制器也需要网关配置只能登录后才能访问
 网关gateway中有GlobalFilter全局过滤器
 第九个视频开始时购物车
 临时用户id时为了区分不同浏览器的用户，
+存储购物车用hash数据类型，因为购物车会经常改变，string是用来存固定的数据
+同步操作缓存，异步操作数据库
+day13视频看完了，剩购物车的代码没有写
+4.11
+day13代码完成，该第六个视频了，前边合并购物车的代码没写，
+由于脖子太疼了，今天就不写了
+4.12
+HttpServletRequest request request.getParameter("id")可以获取url?后面的参数和@RequestParam(name="id" Long id)
+功能一样
+微服务之间传递数据得不到header中的参数，所以要写一个feign的拦截器，用requestTemplate和httpServletRequest获取到header中的参数
+然后用feign来进行传递，这样就可以咋微服务之间获取到header中的参数，电商中是用户信息传递是使用的这种方法，拦截器在web_util中
+这也是spring cloud 微服务传递信息的缺点，就是没有头信息
+每次操作购物车都会更新购物车的缓存过期时间都是从操作时刻起七天
