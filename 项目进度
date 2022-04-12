@@ -134,3 +134,8 @@ HttpServletRequest request request.getParameter("id")可以获取url?后面的�
 然后用feign来进行传递，这样就可以咋微服务之间获取到header中的参数，电商中是用户信息传递是使用的这种方法，拦截器在web_util中
 这也是spring cloud 微服务传递信息的缺点，就是没有头信息
 每次操作购物车都会更新购物车的缓存过期时间都是从操作时刻起七天
+完成购物车模块，该订单模块了
+你是来学技术挣钱的，不是来交朋友的，所以别太在乎
+service-user service-user-client,service-order,service-order-client,web-all
+day14视频看完了，订单的代码还没写
+
