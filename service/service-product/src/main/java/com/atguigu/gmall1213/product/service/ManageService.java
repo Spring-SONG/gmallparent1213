@@ -103,4 +103,11 @@ public interface ManageService {
      * @return
      */
     List<BaseAttrInfo> getAttrInfoList(Long skuId);
+
+
+    /**
+     * 根据skuId 实现商品下架
+     * @param skuId
+     */
+    void cancelSale(Long skuId);
 }

@@ -9,6 +9,8 @@ import com.atguigu.gmall1213.product.service.ManageService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import common.constant.MqConst;
+import common.service.RabbitService;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +87,10 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     private BaseTrademarkMapper baseTrademarkMapper;
+
+    @Autowired
+    private RabbitService rabbitService;
+
     @Override
     public List<BaseCategory1> getCategory1() {
         List<BaseCategory1> baseCategory1s=baseCategory1Mapper.selectList(null);
@@ -273,6 +279,7 @@ public class ManageServiceImpl implements ManageService {
         }
         //发送一个消息队列通知商品上架，发送的内容就是skudI
         //TODO
+        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_GOODS, MqConst.ROUTING_GOODS_UPPER, skuInfo.getId());
     }
 
     @Override
@@ -287,6 +294,8 @@ public class ManageServiceImpl implements ManageService {
         skuInfo.setIsSale(1);
         skuInfo.setId(skuId);
         skuInfoMapper.updateById(skuInfo);
+        //发送一个商品上架的消息
+        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_GOODS, MqConst.ROUTING_GOODS_UPPER, skuId);
     }
 
     @Override
@@ -543,6 +552,22 @@ public class ManageServiceImpl implements ManageService {
         // sku_attr_value这个中间表没有属性名称，属性值名称等。所以要进行多表关联查询。
         return baseAttrInfoMapper.selectAttrInfoList(skuId);
 
+    }
+
+    /**
+     * 商品下架
+     * @param skuId
+     */
+    @Override
+    public void cancelSale(Long skuId) {
+        // 0 那么则这商品不能买！ update sku_info set is_sale = 0 where id=skuId
+        SkuInfo skuInfo = new SkuInfo();
+        skuInfo.setIsSale(0);
+        skuInfo.setId(skuId);
+        skuInfoMapper.updateById(skuInfo);
+
+        // 发送一个商品下架的消息。
+        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_GOODS,MqConst.ROUTING_GOODS_LOWER,skuId);
     }
 
 }
