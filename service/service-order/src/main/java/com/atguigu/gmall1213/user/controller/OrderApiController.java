@@ -13,10 +13,7 @@ import com.atguigu.gmall1213.user.service.OrderService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -52,6 +49,7 @@ public class OrderApiController {
     private ProductFeignClient productFeignClient;
 
 
+    @GetMapping("auth/trade")
     public Result<Map<String, Object>> trade(HttpServletRequest request) {
         String userId=AuthContextHolder.getUserId(request);
 
@@ -171,5 +169,12 @@ public class OrderApiController {
         Long orderId = orderService.saveOrderInfo(orderInfo);
         // 返回用户Id
         return Result.ok(orderId);
+    }
+
+    @GetMapping("inner/getOrderInfo/{orderId}")
+    public OrderInfo getOrderIfo(@PathVariable Long orderId) {
+
+        return orderService.getOrderInfo(orderId);
+
     }
 }

@@ -2,15 +2,21 @@ package com.atguigu.gmall1213.user.service.impl;
 
 import com.atguigu.gmall1213.common.util.HttpClientUtil;
 import com.atguigu.gmall1213.model.enums.OrderStatus;
+import com.atguigu.gmall1213.model.enums.ProcessStatus;
 import com.atguigu.gmall1213.model.order.OrderDetail;
 import com.atguigu.gmall1213.model.order.OrderInfo;
 import com.atguigu.gmall1213.user.mapper.OrderDetailMapper;
 import com.atguigu.gmall1213.user.mapper.OrderInfoMapper;
 import com.atguigu.gmall1213.user.service.OrderService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import common.constant.MqConst;
+import common.service.RabbitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -21,7 +27,7 @@ import java.util.*;
  * @Date: 2022/4/14 14:54
  */
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<OrderInfoMapper,OrderInfo> implements OrderService {
 
     @Autowired
     private OrderDetailMapper orderDetailMapper;
@@ -32,10 +38,14 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private RabbitService rabbitService;
+
     @Value("${ware.url}")
     private String WareUrl;
 
     @Override
+    @Transactional
     public Long saveOrderInfo(OrderInfo orderInfo) {
 
         orderInfo.sumTotalAmount();
@@ -67,6 +77,8 @@ public class OrderServiceImpl implements OrderService {
                     orderDetailMapper.insert(detail);
                 }
             }
+        rabbitService.sendDelayMessage(MqConst.EXCHANGE_DIRECT_ORDER_CANCEL, MqConst.ROUTING_ORDER_CANCEL,
+                orderInfo.getId(), MqConst.DELAY_TIME);
         return orderInfo.getId();
     }
 
@@ -101,5 +113,28 @@ public class OrderServiceImpl implements OrderService {
         String result = HttpClientUtil.doGet(WareUrl + "/hasStock?skuId=" + skuId + "&num=" + skuNum);
         // 0 无货， 1 有货
         return "1".equals(result);
+    }
+
+    @Override
+    public OrderInfo getOrderInfo(Long orderId) {
+
+        OrderInfo orderInfo=orderInfoMapper.selectById(orderId);
+        List<OrderDetail> orderDetailList=orderDetailMapper.selectList(new QueryWrapper<OrderDetail>().eq("order_id", orderId));
+        orderInfo.setOrderDetailList(orderDetailList);
+
+        return orderInfo;
+    }
+
+    @Override
+    public void execExpiredOrder(Long orderId) {
+        updateOrderStatus(orderId, ProcessStatus.CLOSED);
+    }
+
+    private void updateOrderStatus(Long orderId, ProcessStatus processStatus) {
+        OrderInfo orderInfo=new OrderInfo();
+        orderInfo.setId(orderId);
+        orderInfo.setOrderStatus(processStatus.getOrderStatus().name());
+        orderInfo.setProcessStatus(processStatus.name());
+        orderInfoMapper.updateById(orderInfo);
     }
 }

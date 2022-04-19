@@ -24,4 +24,8 @@ public interface OrderService {
      * @return
      */
     boolean checkStock(Long skuId, Integer skuNum);
+
+    OrderInfo getOrderInfo(Long orderId);
+
+    void execExpiredOrder(Long orderId);
 }

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 
 /**
- * @Description:
+ * @Description: 项目中用的是这个延迟插件实现的消息延迟发送
  * @Author: songshiqi
  * @Date: 2022/4/18 15:50
  */
