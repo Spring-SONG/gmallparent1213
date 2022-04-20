@@ -1,5 +1,6 @@
 package com.atguigu.gmall1213.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall1213.common.util.HttpClientUtil;
 import com.atguigu.gmall1213.model.enums.OrderStatus;
 import com.atguigu.gmall1213.model.enums.ProcessStatus;
@@ -130,11 +131,63 @@ public class OrderServiceImpl extends ServiceImpl<OrderInfoMapper,OrderInfo> imp
         updateOrderStatus(orderId, ProcessStatus.CLOSED);
     }
 
-    private void updateOrderStatus(Long orderId, ProcessStatus processStatus) {
+    public void updateOrderStatus(Long orderId, ProcessStatus processStatus) {
         OrderInfo orderInfo=new OrderInfo();
         orderInfo.setId(orderId);
         orderInfo.setOrderStatus(processStatus.getOrderStatus().name());
         orderInfo.setProcessStatus(processStatus.name());
         orderInfoMapper.updateById(orderInfo);
+    }
+
+    @Override
+    public void sendOrderStatus(Long orderId) {
+        updateOrderStatus(orderId, ProcessStatus.NOTIFIED_WARE);
+        // 需要参考库存管理文档 根据管理手册。
+        // 发送的数据 是 orderInfo 中的部分属性数据，并非全部属性数据！
+        // 获取发送的字符串：
+        String wareJson = initWareOrder(orderId);
+        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_WARE_STOCK, MqConst.ROUTING_WARE_STOCK, wareJson);
+
+    }
+
+    public String initWareOrder(Long orderId) {
+        // 首先查询到orderInfo
+        OrderInfo orderInfo = getOrderInfo(orderId);
+        // 将orderInfo 中的部分属性，放入一个map 集合中。
+        Map map = initWareOrder(orderInfo);
+        // 返回json 字符串
+        return JSON.toJSONString(map);
+    }
+
+    // 将orderInfo 部分数据组成map
+    public Map initWareOrder(OrderInfo orderInfo) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("orderId",orderInfo.getId());
+        map.put("consignee", orderInfo.getConsignee());
+        map.put("consigneeTel", orderInfo.getConsigneeTel());
+        map.put("orderComment", orderInfo.getOrderComment());
+        map.put("orderBody", orderInfo.getTradeBody());
+        map.put("deliveryAddress", orderInfo.getDeliveryAddress());
+        map.put("paymentWay", "2");
+        // map.put("wareId", orderInfo.getWareId());// 仓库Id ，减库存拆单时需要使用！
+        /*
+            details 对应的是订单明细
+            details:[{skuId:101,skuNum:1,skuName:’小米手64G’},
+                       {skuId:201,skuNum:1,skuName:’索尼耳机’}]
+         */
+        // 声明一个list 集合 来存储map
+        List<Map> maps = new ArrayList<>();
+        List<OrderDetail> orderDetailList = orderInfo.getOrderDetailList();
+        for (OrderDetail orderDetail : orderDetailList) {
+            // 先声明一个map 集合
+            HashMap<String, Object> orderDetailMap = new HashMap<>();
+            orderDetailMap.put("skuId",orderDetail.getSkuId());
+            orderDetailMap.put("skuNum",orderDetail.getSkuNum());
+            orderDetailMap.put("skuName",orderDetail.getSkuName());
+            maps.add(orderDetailMap);
+        }
+        map.put("details", JSON.toJSONString(maps));
+        // 返回构成好的map集合。
+        return map;
     }
 }

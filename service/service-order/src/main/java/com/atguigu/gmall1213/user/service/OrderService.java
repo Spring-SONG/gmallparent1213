@@ -1,6 +1,9 @@
 package com.atguigu.gmall1213.user.service;
 
+import com.atguigu.gmall1213.model.enums.ProcessStatus;
 import com.atguigu.gmall1213.model.order.OrderInfo;
+
+import java.util.Map;
 
 public interface OrderService {
     // 保存订单
@@ -28,4 +31,15 @@ public interface OrderService {
     OrderInfo getOrderInfo(Long orderId);
 
     void execExpiredOrder(Long orderId);
+
+    void updateOrderStatus(Long orderId, ProcessStatus paid);
+
+    void sendOrderStatus(Long orderId);
+
+    /**
+     * 将orderInfo 转化为map集合
+     * @param orderInfo
+     * @return
+     */
+    Map initWareOrder(OrderInfo orderInfo);
 }
